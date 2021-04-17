@@ -1,21 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import { SafeAreaView } from 'react-native'
+import AppLoading from 'expo-app-loading'
+import { useFonts } from 'expo-font'
+
+import { TodosContextProvider } from './src/store/context/todos'
+import MainLayout from './src/MainLayout'
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+  const [fontsLoaded] = useFonts({
+    'roboto-regular': require('./src/assets/fonts/Roboto-Regular.ttf'),
+    'roboto-bold': require('./src/assets/fonts/Roboto-Bold.ttf'),
+    khand: require('./src/assets/fonts/khand.ttf')
+  })
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  if (!fontsLoaded) return <AppLoading />
+
+  return (
+    <TodosContextProvider>
+      <SafeAreaView>
+        <MainLayout />
+      </SafeAreaView>
+    </TodosContextProvider>
+  )
+}

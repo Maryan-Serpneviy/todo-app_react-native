@@ -1,0 +1,1 @@
+export const MIN_TODO_LENGTH = 5
