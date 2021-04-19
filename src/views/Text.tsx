@@ -3,7 +3,7 @@ import { StyleSheet, Text } from 'react-native'
 
 interface Props {
    children: ReactNode | JSX.Element
-   style: Object
+   style?: Object
 }
 
 export const AppText: FC<Props> = ({ style, children }) => (

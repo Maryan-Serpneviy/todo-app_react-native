@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { View, StyleSheet, Platform } from 'react-native'
 
 import Text from '../views/Text'
-import { THEME } from '../theme'
+import { THEME } from '../styles/theme'
 
 interface Props {
    title: string

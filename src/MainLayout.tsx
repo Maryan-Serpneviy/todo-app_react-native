@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { Alert } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 
@@ -7,6 +7,7 @@ import { withStore } from './store/mobx/withStore'
 
 /* components */
 import Navbar from './components/Navbar'
+import Loader from './views/Loader'
 
 /* screens */
 import DashboardScreen from './screens/Dashboard'
@@ -18,6 +19,8 @@ const Stack = createStackNavigator()
 
 const MainLayout: FC = () => {
    const { todos, removeTodo } = todosStore
+
+   const [isLoading, setIsLoading] = useState<boolean>(false)
 
    const onRemoveHandler = (id: string, afterRemoveCallback?: Function)=> {
       const title = todos.find(item => item.id === id)?.title
@@ -32,9 +35,14 @@ const MainLayout: FC = () => {
             },
             {
                text: 'Delete',
-               onPress: () => {
-                  removeTodo(id)
-                  afterRemoveCallback?.()
+               onPress: async () => {
+                  try {
+                     setIsLoading(true)
+                     await removeTodo(id)
+                  } finally {
+                     setIsLoading(false)
+                     afterRemoveCallback?.()
+                  }
                }
             }
          ],
@@ -42,7 +50,7 @@ const MainLayout: FC = () => {
       )
    }
 
-   return <>
+   return isLoading ? <Loader /> : <>
       <Navbar title="Todo App" />
 
       <Stack.Navigator initialRouteName={Screen.Dashboard} mode="modal" headerMode="screen">

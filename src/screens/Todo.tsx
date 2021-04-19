@@ -10,10 +10,10 @@ import EditModal from '../components/EditModal'
 import Card from '../views/Card'
 import TextBold from '../views/TextBold'
 import Button from '../views/Button'
+import Loader from '../views/Loader'
 
 /* constants */
-import { THEME } from '../theme'
-import { Screen } from '../core/config/constants'
+import { THEME } from '../styles/theme'
 
 /* types */
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -24,19 +24,25 @@ interface Props {
    onRemove: (id: string) => void
 }
 
-const TodoScreen: FC<Props> = ({ navigation, onRemove }) => {
+const TodoScreen: FC<Props> = ({ onRemove }) => {
    const { selectedTodo, editTodo } = todosStore
 
    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-   const onSaveHandler = (title: string) => {
+   const onSaveHandler = async (title: string) => {
       if (selectedTodo) {
-         editTodo({ id: selectedTodo.id, title })
-         setIsModalOpen(false)
+         try {
+            setIsLoading(true)
+            await editTodo({ id: selectedTodo.id, title })
+         } finally {
+            setIsLoading(false)
+            setIsModalOpen(false)
+         }
       }
    }
 
-   return (
+   return isLoading ? <Loader /> : (
       <View>
          <Card>
             <TextBold style={styles.title}>{ selectedTodo?.title }</TextBold>

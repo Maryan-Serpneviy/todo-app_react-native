@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 import { StyleSheet, View, TextInput, Alert, Keyboard } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 
-import { THEME } from '../theme'
+import { THEME } from '../styles/theme'
 
 interface Props {
    onAdd: (title: string) => void

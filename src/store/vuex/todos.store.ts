@@ -1,5 +1,6 @@
-import { createModule, mutation, action } from 'vuex-class-component'
+import { createModule, getter, mutation, action } from 'vuex-class-component'
 
+import { todosService } from '../../services/todos.service'
 import { iTodo } from 'types'
 
 const VuexModule = createModule({
@@ -7,16 +8,31 @@ const VuexModule = createModule({
 })
 
 export class TodosStore extends VuexModule {
+   /* DATA */
    todos: iTodo[] = []
    todoId: string | null = null
+   error = ''
+
+   /* GETTERS */
+   @getter selectedTodo(): iTodo | undefined {
+      return this.todos.find(item => item.id === this.todoId)
+   }
 
    /* MUTATIONS */
-   @mutation ADD_TODO(title: string) {
-      const newTodo = {
-         id: String(Date.now()),
-         title
-      }
-      this.todos.unshift(newTodo)
+   @mutation SET_TODOS(payload: Array<{[key: string]: { title: string }}>)  {
+      this.todos = Object.keys(payload).map(key => ({ ...payload[key], id: key }))
+   }
+
+   @mutation SET_ERROR(error: string) {
+      this.error = error
+   }
+
+   @mutation SET_SELECTED_TODO(value: string | null) {
+      this.todoId = value
+   }
+
+   @mutation ADD_TODO(payload: { id: string, title: string }) {
+      this.todos.unshift(payload)
    }
 
    @mutation EDIT_TODO(todo: iTodo) {
@@ -31,18 +47,50 @@ export class TodosStore extends VuexModule {
    }
 
    /* ACTIONS */
-   @action async addTodo(payload: string): Promise<iTodo[]> {
-      this.ADD_TODO(payload)
-      return this.todos
+   @action async fetchTodos() {
+      try {
+         const data = await todosService.get()
+         if (data) {
+            this.SET_TODOS(data)
+         }
+      } catch (error) {
+         console.error(error)
+         this.SET_ERROR('Failed to get todos')
+      }
    }
 
-   @action async editTodo(payload: iTodo): Promise<iTodo[]> {
-      this.EDIT_TODO(payload)
-      return this.todos
+   @action async addTodo(payload: string) {
+      try {
+         const data = await todosService.post({ title: payload })
+         if (data) {
+            this.ADD_TODO({
+               id: data.name,
+               title: payload   
+            })
+         }
+      } catch (error) {
+         console.error(error)
+         this.SET_ERROR('Failed to add todo')
+      }
    }
 
-   @action async removeTodo(payload: string): Promise<iTodo[]> {
-      this.REMOVE_TODO(payload)
-      return this.todos
+   @action async editTodo(payload: iTodo) {
+      try {
+         await todosService.patch(payload.id, { title: payload.title })
+         this.EDIT_TODO(payload)
+      } catch (error) {
+         console.error(error)
+         this.SET_ERROR('Failed to update todo')
+      }
+   }
+
+   @action async removeTodo(payload: string) {
+      try {
+         await todosService.delete(payload)
+         this.REMOVE_TODO(payload)
+      } catch (error) {
+         console.error(error)
+         this.SET_ERROR('Failed to delete todo')
+      }
    }
 }

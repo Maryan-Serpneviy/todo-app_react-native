@@ -5,7 +5,7 @@ import Button from '../views/Button'
 
 /* constants */
 import { MIN_TODO_LENGTH } from '../core/config'
-import { THEME } from '../theme'
+import { THEME } from '../styles/theme'
 
 interface Props {
    value?: string

@@ -9,14 +9,14 @@ import {
 
 import TextBold from '../views/TextBold'
 
-import { THEME } from '../theme'
+import { THEME } from '../styles/theme'
 
 interface Props {
    onPress: () => void
    style?: Object
    color?: string
    title?: string
-   children?: JSX.Element
+   children?: JSX.Element | string
 }
 
 export const Button: FC<Props> = ({ title, children, onPress, color = THEME.MAIN_COLOR }) => {
