@@ -6,7 +6,8 @@ export class HttpService {
       method: HTTPMethod
       payload?: Object
       timeout?: number
-   }): Promise<any | undefined> {
+   }): Promise<any> {
+
       const requestParams: RequestInit = {
          method: options.method,
          headers: {
@@ -26,7 +27,6 @@ export class HttpService {
          if (response.ok || response.status === 200 || response.statusText === 'OK') {
             return await response.json()
          }
-         return response
       } catch (error) {
          console.error(error)
          throw error
@@ -35,7 +35,7 @@ export class HttpService {
 
    static fetchWithTimeout = (url: string, params: RequestInit = {}, timeout: number) => {
       if (params.signal) {
-          throw new Error('Signal not supported')
+         throw new Error('Signal is not supported')
       }
       const controller = new AbortController()
       const { signal } = controller
@@ -48,7 +48,7 @@ export class HttpService {
          fetch(url, { signal, ...params })
             .then(response => {
                if (response.status !== 200) {
-                  return response.text().then((text) => {
+                  return response.text().then(text => {
                      reject()
                   })
                }
