@@ -1,8 +1,6 @@
 import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { THEME } from '../theme'
-
 interface Props {
    children: JSX.Element | JSX.Element[]
 }

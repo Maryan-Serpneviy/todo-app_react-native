@@ -1,23 +1,25 @@
-import React, { FC, useContext } from 'react'
+import React, { FC } from 'react'
 import { Alert } from 'react-native'
+import { createStackNavigator } from '@react-navigation/stack'
 
-import { TodosContext } from './store/context/todos'
+import { todosStore } from './store/mobx/todos.store'
+import { withStore } from './store/mobx/withStore'
 
 /* components */
 import Navbar from './components/Navbar'
 
 /* screens */
-import MainScreen from './screens/Main'
+import DashboardScreen from './screens/Dashboard'
 import TodoScreen from './screens/Todo'
 
-export const MainLayout: FC = () => {
-   const {
-      todos,
-      selectedTodo,
-      removeTodo
-   } = useContext(TodosContext)
+import { Screen } from './core/config/constants'
 
-   const onRemoveHandler = (id: string) => {
+const Stack = createStackNavigator()
+
+const MainLayout: FC = () => {
+   const { todos, removeTodo } = todosStore
+
+   const onRemoveHandler = (id: string, afterRemoveCallback?: Function)=> {
       const title = todos.find(item => item.id === id)?.title
   
       Alert.alert(
@@ -32,6 +34,7 @@ export const MainLayout: FC = () => {
                text: 'Delete',
                onPress: () => {
                   removeTodo(id)
+                  afterRemoveCallback?.()
                }
             }
          ],
@@ -42,11 +45,23 @@ export const MainLayout: FC = () => {
    return <>
       <Navbar title="Todo App" />
 
-      {!selectedTodo
-         ? <MainScreen onRemove={onRemoveHandler} />
-         : <TodoScreen onRemove={onRemoveHandler} />
-      }
+      <Stack.Navigator initialRouteName={Screen.Dashboard} mode="modal" headerMode="screen">
+         <Stack.Screen name={Screen.Dashboard}>
+            {props => <DashboardScreen {...props} onRemove={onRemoveHandler} />}
+         </Stack.Screen>
+
+         <Stack.Screen name={Screen.Todo}>
+            {props =>
+               <TodoScreen
+                  {...props}
+                  onRemove={(id: string) => {
+                     onRemoveHandler(id, () => props.navigation.navigate(Screen.Dashboard))
+                  }}
+               />
+            }
+         </Stack.Screen>
+      </Stack.Navigator>
    </>
 }
 
-export default MainLayout
+export default withStore(MainLayout)

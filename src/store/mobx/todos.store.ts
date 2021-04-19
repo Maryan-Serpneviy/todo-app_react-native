@@ -1,42 +1,38 @@
-import { configure, observable, computed, action } from 'mobx'
-
+import { configure, makeAutoObservable } from 'mobx'
 import { iTodo } from 'types'
 
 configure({ enforceActions: 'observed' })
 export class TodosStore {
    constructor() {
-      this.setTodoId = this.setTodoId.bind(this)
-      this.addTodo = this.addTodo.bind(this)
-      this.editTodo = this.editTodo.bind(this)
-      this.removeTodo = this.removeTodo.bind(this)
+      makeAutoObservable(this)
    }
 
-   @observable todos: iTodo[] = []
-   @observable todoId: string | null = null
+   todos: iTodo[] = []
+   todoId: string | null = null
 
-   @computed get selectedTodo(): iTodo | undefined {
+   get selectedTodo(): iTodo | undefined {
       return this.todos.find(item => item.id === this.todoId)
    }
 
-   @action async setTodoId(value: string | null): Promise<void> {
+   setSelectedTodo = (value: string | null) => {
       this.todoId = value
    }
 
-   @action addTodo(title: string) {
+   addTodo = (title: string) => {
       const newTodo = {
          id: String(Date.now()),
          title
       }
       this.todos.unshift(newTodo)
-      console.log(this.todos.length)
    }
 
-   @action async editTodo(todo: iTodo): Promise<void> {
+   editTodo = (todo: iTodo) => {
       const targetTodo = this.todos.find(item => item.id === todo.id)
       if (targetTodo) targetTodo.title = todo.title
+      this.todos = [...this.todos]
    }
 
-   @action async removeTodo(id: string): Promise<void> {
+   removeTodo = (id: string) => {
       this.todoId = null
       this.todos = this.todos.filter(item => item.id !== id)
    }

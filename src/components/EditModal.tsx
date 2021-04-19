@@ -4,7 +4,7 @@ import { StyleSheet, Modal, Alert, View, TextInput } from 'react-native'
 import Button from '../views/Button'
 
 /* constants */
-import { MIN_TODO_LENGTH } from '../config'
+import { MIN_TODO_LENGTH } from '../core/config'
 import { THEME } from '../theme'
 
 interface Props {

@@ -25,7 +25,6 @@ export const Navbar: FC<Props> = ({ title }) => {
 const styles = StyleSheet.create({
    navbar: {
       height: 70,
-      paddingBottom: 10,
       alignItems: 'center',
       justifyContent: 'flex-end'
    },

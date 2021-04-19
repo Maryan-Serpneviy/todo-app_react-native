@@ -1,9 +1,11 @@
 import React from 'react'
-import { SafeAreaView } from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
 import AppLoading from 'expo-app-loading'
 import { useFonts } from 'expo-font'
 
-import { TodosContextProvider } from './src/store/context/todos'
+import { Provider } from 'mobx-react'
+import { todosStore as store } from './src/store/mobx/todos.store'
+
 import MainLayout from './src/MainLayout'
 
 export default function App() {
@@ -16,10 +18,10 @@ export default function App() {
   if (!fontsLoaded) return <AppLoading />
 
   return (
-    <TodosContextProvider>
-      <SafeAreaView>
+    <Provider store={store}>
+      <NavigationContainer>
         <MainLayout />
-      </SafeAreaView>
-    </TodosContextProvider>
+      </NavigationContainer>
+    </Provider>
   )
 }

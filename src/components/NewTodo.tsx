@@ -40,7 +40,7 @@ export const NewTodo: FC<Props> = ({ onAdd }) => {
 const styles = StyleSheet.create({
    container: {
       flexDirection: 'row',
-      marginBottom: 15
+      marginVertical: 15
    },
    input: {
       flexGrow: 1,

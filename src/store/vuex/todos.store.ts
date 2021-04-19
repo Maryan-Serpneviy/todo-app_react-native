@@ -22,6 +22,7 @@ export class TodosStore extends VuexModule {
    @mutation EDIT_TODO(todo: iTodo) {
       const targetTodo = this.todos.find(item => item.id === todo.id)
       if (targetTodo) targetTodo.title = todo.title
+      this.todos = [...this.todos]
    }
    
    @mutation REMOVE_TODO(id: string) {

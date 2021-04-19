@@ -1,22 +1,27 @@
-import React, { FC, useContext } from 'react'
+import React, { FC } from 'react'
 import { StyleSheet, View, FlatList, Image, Dimensions } from 'react-native'
 
-import { TodosContext } from '../store/context/todos'
+import { todosStore } from '../store/mobx/todos.store'
+import { withStore } from '../store/mobx/withStore'
 
 /* components */
 import NewTodo from '../components/NewTodo'
 import Todo from '../components/Todo'
 
+/* constants */
+import { Screen } from '../core/config/constants'
+
+/* types */
+import { StackNavigationProp } from '@react-navigation/stack'
+import { ParamListBase } from '@react-navigation/native'
+
 interface Props {
+   navigation: StackNavigationProp<ParamListBase>
    onRemove: (id: string) => void
 }
 
-export const MainScreen: FC<Props> = ({ onRemove }) => {
-   const {
-      todos,
-      setSelectedTodo,
-      addTodo
-   } = useContext(TodosContext)
+const DashboardScreen: FC<Props> = ({ navigation, onRemove }) => {
+   const { todos, setSelectedTodo, addTodo } = todosStore
 
    return (
       <View style={styles.container}>
@@ -29,7 +34,10 @@ export const MainScreen: FC<Props> = ({ onRemove }) => {
                   <Todo
                      todo={item}
                      onRemove={onRemove}
-                     onOpen={setSelectedTodo}
+                     onPress={() => {
+                        setSelectedTodo(item.id)
+                        navigation.navigate(Screen.Todo)
+                     }}
                   />
                )}
                keyExtractor={item => item.id}
@@ -48,8 +56,10 @@ export const MainScreen: FC<Props> = ({ onRemove }) => {
 
 const styles = StyleSheet.create({
    container: {
+      flex: 1,
       width: Dimensions.get('window').width,
-      paddingHorizontal: 10
+      paddingHorizontal: 10,
+      backgroundColor: 'white'
    },
    image_container: {
       alignItems: 'center',
@@ -64,4 +74,4 @@ const styles = StyleSheet.create({
    }
 })
 
-export default MainScreen
+export default withStore(DashboardScreen)

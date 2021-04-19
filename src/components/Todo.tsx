@@ -1,19 +1,19 @@
 import React, { FC } from 'react'
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native'
+import { StyleSheet, TouchableOpacity, View, Text, GestureResponderEvent } from 'react-native'
 import { iTodo } from 'types'
 
 interface Props {
    todo: iTodo
    onRemove: (id: string) => void
-   onOpen: (id: string) => void
+   onPress: (event: GestureResponderEvent) => void
 }
 
-export const Todo: FC<Props> = ({ todo, onRemove, onOpen }) => {
+export const Todo: FC<Props> = ({ todo, onRemove, onPress }) => {
    return (
       <TouchableOpacity
          activeOpacity={0.4}
-         onPress={onOpen.bind(null, todo.id)}
-         onLongPress={onRemove.bind(null, todo.id)}
+         onPress={onPress}
+         onLongPress={() => onRemove(todo.id)}
       >
          <View style={styles.todo}>
             <Text>{ todo.title }</Text>

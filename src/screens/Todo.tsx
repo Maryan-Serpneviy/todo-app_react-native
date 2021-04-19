@@ -1,8 +1,9 @@
-import React, { FC, useState, useContext } from 'react'
+import React, { FC, useState } from 'react'
 import { StyleSheet, View, Dimensions } from 'react-native'
-import { FontAwesome, AntDesign } from '@expo/vector-icons'
+import { FontAwesome } from '@expo/vector-icons'
 
-import { TodosContext } from '../store/context/todos'
+import { todosStore } from '../store/mobx/todos.store'
+import { withStore } from '../store/mobx/withStore'
 
 /* components */
 import EditModal from '../components/EditModal'
@@ -12,18 +13,19 @@ import Button from '../views/Button'
 
 /* constants */
 import { THEME } from '../theme'
+import { Screen } from '../core/config/constants'
 
 /* types */
+import { StackNavigationProp } from '@react-navigation/stack'
+import { ParamListBase } from '@react-navigation/native'
+
 interface Props {
+   navigation: StackNavigationProp<ParamListBase>
    onRemove: (id: string) => void
 }
 
-export const TodoScreen: FC<Props> = ({ onRemove }) => {
-   const {
-      selectedTodo,
-      setSelectedTodo,
-      editTodo
-   } = useContext(TodosContext)
+const TodoScreen: FC<Props> = ({ navigation, onRemove }) => {
+   const { selectedTodo, editTodo } = todosStore
 
    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
@@ -38,19 +40,15 @@ export const TodoScreen: FC<Props> = ({ onRemove }) => {
       <View>
          <Card>
             <TextBold style={styles.title}>{ selectedTodo?.title }</TextBold>
-            <Button title="Edit" onPress={() => setIsModalOpen(true)}>
-               <FontAwesome name="edit" size={20} />
-            </Button>
          </Card>
 
          <View style={styles.buttons}>
             <View style={styles.button}>
                <Button
-                  title="Back"
-                  color={THEME.GRAY_COLOR}
-                  onPress={() => setSelectedTodo(null)}
+                  title="Edit"
+                  onPress={() => setIsModalOpen(true)}
                >
-                  <AntDesign name="back" size={20} color="white" />
+                  <FontAwesome name="edit" size={20} />
                </Button>
             </View>
             
@@ -58,7 +56,11 @@ export const TodoScreen: FC<Props> = ({ onRemove }) => {
                <Button
                   title="Delete"
                   color={THEME.DANGER_COLOR}
-                  onPress={() => selectedTodo && onRemove(selectedTodo.id)}
+                  onPress={() => {
+                     if (selectedTodo) {
+                        onRemove(selectedTodo.id)
+                     }
+                  }}
                >
                   <FontAwesome name="remove" size={20} color="white" />
                </Button>
@@ -89,4 +91,4 @@ const styles = StyleSheet.create({
    }
 })
 
-export default TodoScreen
+export default withStore(TodoScreen)

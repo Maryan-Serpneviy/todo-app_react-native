@@ -23,9 +23,10 @@ export class TodosStore extends Model({
    }
 
    @modelAction
-   updateTodo(todo: iTodo) {
+   editTodo(todo: iTodo) {
       const targetTodo = this.todos.find(item => item.id === todo.id)
       if (targetTodo) targetTodo.title = todo.title
+      this.todos = [...this.todos]
    }
 }
 
